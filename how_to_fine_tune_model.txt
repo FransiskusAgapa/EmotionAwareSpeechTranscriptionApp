@@ -1,0 +1,42 @@
+### Ways to Fine-Tune a Wav2Vec2 Model (Bullet Points)
+
+- ** Prepare Custom Dataset (Audio + Text Transcripts)**
+  - Collect or use datasets with `.wav` + `.txt` or `.jsonl` (e.g., Common Voice)
+  - Format as: `{ "audio": "path.wav", "text": "your transcript here" }`
+
+- ** Use Wav2Vec2Processor**
+  - Tokenizes audio and converts text into labels
+  - Must match sample rate (16kHz) and expected format
+
+- ** Add LoRA (Low-Rank Adaptation)**
+  - Efficient lightweight fine-tuning on low-resource devices
+  - Only updates small parts of the model instead of all parameters
+
+- ** Use CTC Loss (Connectionist Temporal Classification)**
+  - Best for variable-length sequences (speech → text)
+  - Allows the model to map audio → words without exact alignment
+
+- ** Use Your Own Vocabulary (optional)**
+  - Customize output language, slang, or specific word sets
+  - Modify `tokenizer.vocab` if using a niche dataset
+
+- ** Training Settings**
+  - Use `Trainer` or `Accelerate` with:
+    - `learning_rate`: 1e-4 to 1e-5
+    - `fp16`: for speed if using GPU
+    - `gradient_checkpointing`: to save memory
+    - `max_steps` or `num_train_epochs`
+
+- ** Use Data Collator for Padding**
+  - Use `DataCollatorCTCWithPadding` to automatically pad input batches
+
+- ** Train on Domain-Specific Audio**
+  - Examples: medical speech, podcast, kids, dialects, commands
+  - Improves real-world accuracy in your target use case
+
+- ** Evaluate with WER (Word Error Rate)**
+  - Use `datasets.load_metric("wer")`
+  - Track accuracy on validation set
+
+---
+
